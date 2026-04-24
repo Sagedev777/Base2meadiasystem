@@ -1,0 +1,42 @@
+# ─────────────────────────────────────────────────────────────────
+# Base 2 Media Academy — cPanel Apache .htaccess
+# Place this file in: public_html/.htaccess
+# ─────────────────────────────────────────────────────────────────
+
+Options -MultiViews
+RewriteEngine On
+
+# ── Proxy /api/* → Node.js backend (port 4000) ─────────────────
+# cPanel Node.js App must be running on port 4000
+RewriteCond %{REQUEST_URI} ^/api [NC]
+RewriteRule ^(.*)$ http://127.0.0.1:4000/$1 [P,L]
+
+# ── React SPA — serve index.html for all non-file routes ────────
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+
+# ── Security Headers ─────────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+# ── Cache static assets ──────────────────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp     "access plus 1 month"
+  ExpiresByType image/png      "access plus 1 month"
+  ExpiresByType image/jpeg     "access plus 1 month"
+  ExpiresByType text/css       "access plus 1 week"
+  ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+
+# ── Gzip compression ─────────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css
+  AddOutputFilterByType DEFLATE application/javascript application/json
+</IfModule>
