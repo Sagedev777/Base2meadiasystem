@@ -16,10 +16,11 @@ import financialsRoutes from './routes/financials';
 import auditPlugin from './plugins/auditLog';
 import csvRoutes from './routes/csv';
 import uploadRoutes from './routes/upload';
+import auditRoutes from './routes/audit';
 
 dotenv.config();
 
-export const server = Fastify({ logger: true });
+export const server = Fastify({ logger: true, bodyLimit: 10485760 });
 
 // ─── Plugins ───────────────────────────────────────────────────
 server.register(cors, {
@@ -73,6 +74,7 @@ server.register(staffRoutes,      { prefix: '/api/admin' });
 server.register(financialsRoutes, { prefix: '/api' });
 server.register(csvRoutes,        { prefix: '/api' });
 server.register(uploadRoutes,     { prefix: '/api' });
+server.register(auditRoutes,      { prefix: '/api' });
 
 // ─── Health Check ──────────────────────────────────────────────
 server.get('/health', async () => ({ status: 'ok', time: new Date() }));
@@ -82,7 +84,7 @@ const start = async () => {
   try {
     const port = Number(process.env.PORT) || 3001;
     await server.listen({ port, host: '0.0.0.0' });
-    console.log(`\n🚀 Base 2 Media Academy API running on http://localhost:${port}`);
+    console.log(`\n🚀 Base2 Science and Media Academy API running on http://localhost:${port}`);
     console.log(`📦 Routes registered: /api/auth, /api/admin, /api/grades, /api/attendance`);
   } catch (err) {
     server.log.error(err);

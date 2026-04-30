@@ -67,7 +67,7 @@ export default function ParentDashboard() {
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 36, fontWeight: 900, color: gpaColor, lineHeight: 1 }}>{gpa.toFixed(2)}</div>
-              <div style={{ fontSize: 11, color: '#64748b' }}>GPA</div>
+              <div style={{ fontSize: 11, color: '#64748b' }}>Avg Score</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 36, fontWeight: 900, color: '#f97316', lineHeight: 1 }}>
@@ -148,7 +148,7 @@ export default function ParentDashboard() {
       <div className="card" style={{ marginTop: 20, padding: 0 }}>
         <div className="card-header" style={{ padding: '16px 24px' }}>
           <div><h3>{CHILD.firstName}'s Grades</h3><p>All subjects · {currentTerm.name}</p></div>
-          <span style={{ fontSize: 13, fontWeight: 700, color: gpaColor }}>GPA {gpa.toFixed(2)}</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: gpaColor }}>Avg Score {gpa.toFixed(2)}</span>
         </div>
         <div className="table-wrap">
           <table>
@@ -188,7 +188,7 @@ export default function ParentDashboard() {
                 <div style={{ flex: 1, fontWeight: isChild ? 700 : 500 }}>
                   {entry.studentName} {isChild && <Heart size={12} style={{ display: 'inline', color: '#f97316', marginLeft: 4 }}/>}
                 </div>
-                <div style={{ fontWeight: 800, fontSize: 16, color }}>{entry.gpa.toFixed(2)} GPA</div>
+                <div style={{ fontWeight: 800, fontSize: 16, color }}>{entry.gpa.toFixed(2)} Avg Score</div>
               </div>
             );
           })}
@@ -198,7 +198,7 @@ export default function ParentDashboard() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderRadius: 10, background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.3)' }}>
                 <div className="rank-badge rank-n">{childRank.classRank}</div>
                 <div style={{ flex: 1, fontWeight: 700 }}>{CHILD.fullName} <Heart size={12} style={{ display: 'inline', color: '#f97316', marginLeft: 4 }}/></div>
-                <div style={{ fontWeight: 800, fontSize: 16, color: gpaColor }}>{childRank.gpa.toFixed(2)} GPA</div>
+                <div style={{ fontWeight: 800, fontSize: 16, color: gpaColor }}>{childRank.gpa.toFixed(2)} Avg Score</div>
               </div>
             </>
           )}

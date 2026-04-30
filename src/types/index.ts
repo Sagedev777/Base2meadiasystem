@@ -36,7 +36,20 @@ export interface Student {
   phone: string;
   address: string;
   photoUrl?: string;
+  parentName1?: string;
+  parentPhone1?: string;
+  parentName2?: string;
+  parentPhone2?: string;
   parentId?: string;
+  totalFee?: number;
+}
+
+export interface Assignment {
+  id: string;
+  staffId: string;
+  subjectId: string;
+  classId: string;
+  termId: string;
 }
 
 export interface Staff {

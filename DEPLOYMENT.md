@@ -1,4 +1,4 @@
-# 🚀 Base 2 Media Academy — cPanel Deployment Guide
+# 🚀 Base2 Science and Media Academy — cPanel Deployment Guide
 
 > Complete step-by-step instructions to deploy the system to your cPanel server.
 

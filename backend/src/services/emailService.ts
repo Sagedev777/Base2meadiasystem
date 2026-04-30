@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const FROM = `"Base 2 Media Academy" <${process.env.SMTP_USER || 'noreply@base2media.ac'}>`;
+const FROM = `"Base2 Science and Media Academy" <${process.env.SMTP_USER || 'noreply@base2media.ac'}>`;
 
 // ── Email Templates ───────────────────────────────────────────────
 
@@ -37,7 +37,7 @@ export async function sendGradeNotification(opts: {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #0a0d14; color: #f0f4ff; border-radius: 12px; overflow: hidden;">
         <div style="background: linear-gradient(135deg, #a855f7, #3b82f6); padding: 24px; text-align: center;">
-          <h1 style="margin: 0; font-size: 20px; color: #fff;">Base 2 Media Academy</h1>
+          <h1 style="margin: 0; font-size: 20px; color: #fff;">Base2 Science and Media Academy</h1>
           <p style="margin: 6px 0 0; color: rgba(255,255,255,0.8); font-size: 13px;">Grade Notification</p>
         </div>
         <div style="padding: 28px;">
@@ -51,7 +51,7 @@ export async function sendGradeNotification(opts: {
           <p style="color: #94a3b8; font-size: 13px;">Log in to your parent portal to see the full academic report.</p>
         </div>
         <div style="padding: 16px 28px; border-top: 1px solid #1e2d45; font-size: 11px; color: #4b6080; text-align: center;">
-          © Base 2 Media Academy — This is an automated notification.
+          © Base2 Science and Media Academy — This is an automated notification.
         </div>
       </div>
     `,
@@ -72,7 +72,7 @@ export async function sendAbsenceNotification(opts: {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #0a0d14; color: #f0f4ff; border-radius: 12px; overflow: hidden;">
         <div style="background: #ef4444; padding: 24px; text-align: center;">
-          <h1 style="margin: 0; font-size: 20px; color: #fff;">Base 2 Media Academy</h1>
+          <h1 style="margin: 0; font-size: 20px; color: #fff;">Base2 Science and Media Academy</h1>
           <p style="margin: 6px 0 0; color: rgba(255,255,255,0.85); font-size: 13px;">⚠ Absence Notification</p>
         </div>
         <div style="padding: 28px;">
@@ -84,7 +84,7 @@ export async function sendAbsenceNotification(opts: {
           <p style="color: #94a3b8; font-size: 13px;">Log in to the parent portal to view full attendance history.</p>
         </div>
         <div style="padding: 16px 28px; border-top: 1px solid #1e2d45; font-size: 11px; color: #4b6080; text-align: center;">
-          © Base 2 Media Academy — This is an automated notification.
+          © Base2 Science and Media Academy — This is an automated notification.
         </div>
       </div>
     `,
@@ -106,7 +106,7 @@ export async function sendPaymentConfirmation(opts: {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #0a0d14; color: #f0f4ff; border-radius: 12px; overflow: hidden;">
         <div style="background: #22c55e; padding: 24px; text-align: center;">
-          <h1 style="margin: 0; font-size: 20px; color: #fff;">Base 2 Media Academy</h1>
+          <h1 style="margin: 0; font-size: 20px; color: #fff;">Base2 Science and Media Academy</h1>
           <p style="margin: 6px 0 0; color: rgba(255,255,255,0.85); font-size: 13px;">✅ Payment Confirmation</p>
         </div>
         <div style="padding: 28px;">
@@ -127,7 +127,7 @@ export async function sendPaymentConfirmation(opts: {
           <p style="color: #94a3b8; font-size: 13px;">Log in to the parent portal to download your payment receipt.</p>
         </div>
         <div style="padding: 16px 28px; border-top: 1px solid #1e2d45; font-size: 11px; color: #4b6080; text-align: center;">
-          © Base 2 Media Academy — This is an automated receipt.
+          © Base2 Science and Media Academy — This is an automated receipt.
         </div>
       </div>
     `,
@@ -138,11 +138,11 @@ export async function sendPasswordReset(opts: { email: string; name: string; res
   await transporter.sendMail({
     from: FROM,
     to: opts.email,
-    subject: '🔑 Reset Your Password — Base 2 Media Academy',
+    subject: '🔑 Reset Your Password — Base2 Science and Media Academy',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #0a0d14; color: #f0f4ff; border-radius: 12px; overflow: hidden;">
         <div style="background: linear-gradient(135deg, #a855f7, #3b82f6); padding: 24px; text-align: center;">
-          <h1 style="margin: 0; font-size: 20px; color: #fff;">Base 2 Media Academy</h1>
+          <h1 style="margin: 0; font-size: 20px; color: #fff;">Base2 Science and Media Academy</h1>
           <p style="margin: 6px 0 0; color: rgba(255,255,255,0.8); font-size: 13px;">Password Reset</p>
         </div>
         <div style="padding: 28px;">
@@ -156,7 +156,7 @@ export async function sendPasswordReset(opts: { email: string; name: string; res
           </div>
         </div>
         <div style="padding: 16px 28px; border-top: 1px solid #1e2d45; font-size: 11px; color: #4b6080; text-align: center;">
-          © Base 2 Media Academy — This is an automated security email.
+          © Base2 Science and Media Academy — This is an automated security email.
         </div>
       </div>
     `,

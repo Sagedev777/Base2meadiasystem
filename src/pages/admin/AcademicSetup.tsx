@@ -178,7 +178,7 @@ export default function AcademicSetup() {
         <div className="card" style={{ padding: 0 }}>
           <div className="table-wrap">
             <table>
-              <thead><tr><th>Intake Cohort Name</th><th>Students</th><th>Capacity</th><th>Occupancy</th></tr></thead>
+              <thead><tr><th>Class Name</th><th>Students</th><th>Capacity</th><th>Occupancy</th></tr></thead>
               <tbody>
                 {classes.map(c => {
                   const pct = Math.round((c.studentCount / c.capacity) * 100);
@@ -236,7 +236,7 @@ export default function AcademicSetup() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 440 }}>
             <div className="modal-header">
-              <h3>{editingCourse ? 'Edit' : 'Add'} {tab === 'terms' ? 'Term' : tab === 'classes' ? 'Intake Cohort' : 'Course'}</h3>
+              <h3>{editingCourse ? 'Edit' : 'Add'} {tab === 'terms' ? 'Term' : tab === 'classes' ? 'Class' : 'Course'}</h3>
               <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
             </div>
             <div className="modal-body">
@@ -252,7 +252,7 @@ export default function AcademicSetup() {
               )}
               {tab === 'classes' && (
                 <>
-                  <div className="form-group"><label className="form-label">Intake Cohort Name</label><input className="form-input" value={cName} onChange={e => setCName(e.target.value)} placeholder="e.g. Jan 2025 Intake"/></div>
+                  <div className="form-group"><label className="form-label">Class Name</label><input className="form-input" value={cName} onChange={e => setCName(e.target.value)} placeholder="e.g. Jan 2025 Intake"/></div>
                   <div className="form-group"><label className="form-label">Capacity</label><input type="number" className="form-input" value={cCapacity} onChange={e => setCCapacity(Number(e.target.value))}/></div>
                   <button className="btn btn-primary" style={{ width: '100%' }} onClick={addClass}>Create Cohort</button>
                 </>

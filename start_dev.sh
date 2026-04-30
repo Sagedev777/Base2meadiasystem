@@ -1,12 +1,12 @@
 #!/bin/bash
 # ─────────────────────────────────────────────────────────────────
-# Base 2 Media Academy — Local Dev Startup Script
+# Base2 Science and Media Academy — Local Dev Startup Script
 # Usage: bash start_dev.sh
 # ─────────────────────────────────────────────────────────────────
 
 echo ""
 echo "╔══════════════════════════════════════════════════╗"
-echo "║     Base 2 Media Academy — Local Dev Start      ║"
+echo "║     Base2 Science and Media Academy — Local Dev Start      ║"
 echo "╚══════════════════════════════════════════════════╝"
 echo ""
 

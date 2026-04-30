@@ -63,7 +63,7 @@ export default function StudentDashboard() {
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 42, fontWeight: 900, color: gpaColor, lineHeight: 1 }}>{gpa.toFixed(2)}</div>
-            <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>GPA</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>Avg Score</div>
           </div>
         </div>
       </div>

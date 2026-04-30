@@ -29,7 +29,7 @@ export default function ForgotPassword() {
         <div className="login-logo">
           <div className="login-logo-icon">B2</div>
           <div>
-            <h1>Base 2 Media Academy</h1>
+            <h1>Base2 Science and Media Academy</h1>
             <p>School Management System</p>
           </div>
         </div>

@@ -1,4 +1,4 @@
-# Base 2 Media Academy — School Management System (SMS)
+# Base2 Science and Media Academy — School Management System (SMS)
 ## Architecture & Design Blueprint
 
 ---
@@ -500,7 +500,7 @@ base2media-sms/
 ## Open Questions
 
 > [!IMPORTANT]
-> **Academic Grading Scale**: The grading thresholds above (90=A+, 80=A, etc.) are configurable. Should Base 2 Media Academy use a custom grading scale?
+> **Academic Grading Scale**: The grading thresholds above (90=A+, 80=A, etc.) are configurable. Should Base2 Science and Media Academy use a custom grading scale?
 
 > [!IMPORTANT]
 > **Deployment Target**: Will this be hosted on a VPS (e.g., DigitalOcean/Linode), a cloud provider (AWS/GCP), or on-premise server? This impacts the infrastructure choices.
@@ -509,4 +509,4 @@ base2media-sms/
 > **SMS/WhatsApp Notifications**: Should parent notifications go beyond email — e.g., via WhatsApp Business API or SMS gateway (Twilio)?
 
 > [!NOTE]
-> **Multi-Campus Support**: Does Base 2 Media Academy have or plan multiple campuses that need to be managed under one system?
+> **Multi-Campus Support**: Does Base2 Science and Media Academy have or plan multiple campuses that need to be managed under one system?

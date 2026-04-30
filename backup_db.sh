@@ -1,6 +1,6 @@
 #!/bin/bash
 # ─────────────────────────────────────────────────────────────────
-# Base 2 Media Academy — MySQL Database Backup Script
+# Base2 Science and Media Academy — MySQL Database Backup Script
 # Usage:   bash backup_db.sh
 # Cron:    0 2 * * * /path/to/backup_db.sh   (runs daily at 2 AM)
 # ─────────────────────────────────────────────────────────────────
@@ -19,7 +19,7 @@ TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 FILENAME="$BACKUP_DIR/${DB_NAME}_${TIMESTAMP}.sql.gz"
 
 echo "════════════════════════════════════════════"
-echo "  Base 2 Media Academy — DB Backup"
+echo "  Base2 Science and Media Academy — DB Backup"
 echo "  $(date)"
 echo "════════════════════════════════════════════"
 

@@ -51,7 +51,7 @@ export default function Login() {
         <div className="login-logo">
           <div className="login-logo-icon">B2</div>
           <div>
-            <h1>Base 2 Media Academy</h1>
+            <h1>Base2 Science and Media Academy</h1>
             <p>School Management System</p>
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function Login() {
         <div className="login-demos">
           <p>Quick Demo Access</p>
           <div className="demo-chips">
-            {DEMO_USERS.map(u => (
+            {DEMO_USERS.filter(u => u.role === 'admin').map(u => (
               <button
                 key={u.role}
                 id={`demo-${u.role}`}

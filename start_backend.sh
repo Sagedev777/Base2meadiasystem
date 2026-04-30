@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ──────────────────────────────────────────────────
-# Base 2 Media Academy — Backend Startup Script
+# Base2 Science and Media Academy — Backend Startup Script
 # ──────────────────────────────────────────────────
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -9,7 +9,7 @@ BACKEND_DIR="$PROJECT_DIR/backend"
 
 echo ""
 echo "════════════════════════════════════════════"
-echo "  Base 2 Media Academy — SMS Backend"
+echo "  Base2 Science and Media Academy — SMS Backend"
 echo "════════════════════════════════════════════"
 
 # Step 1: Check if XAMPP MySQL is running

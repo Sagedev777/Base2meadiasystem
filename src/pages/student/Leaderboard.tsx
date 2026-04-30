@@ -96,11 +96,11 @@ export default function Leaderboard() {
       {/* Full table */}
       <div className="card" style={{ padding: 0 }}>
         <div className="card-header" style={{ padding: '16px 24px' }}>
-          <div><h3>Full Rankings</h3><p>{leaderboard.length} students ranked by GPA</p></div>
+          <div><h3>Full Rankings</h3><p>{leaderboard.length} students ranked by Avg Score</p></div>
         </div>
         <div className="table-wrap">
           <table>
-            <thead><tr><th>Rank</th><th>Student</th><th>GPA</th><th>Grade Points</th><th>Subjects</th><th>Status</th></tr></thead>
+            <thead><tr><th>Rank</th><th>Student</th><th>Avg Score</th><th>Grade Points</th><th>Subjects</th><th>Status</th></tr></thead>
             <tbody>
               {leaderboard.map(entry => {
                 const isMe = entry.studentId === student.id;

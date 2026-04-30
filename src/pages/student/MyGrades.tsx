@@ -51,7 +51,7 @@ export default function MyGrades() {
       {/* Summary Cards */}
       <div className="stat-grid" style={{ marginBottom: 24 }}>
         {[
-          { label: 'GPA', value: gpa.toFixed(2), color: '#22c55e', sub: gpaCalc.descriptiveWord },
+          { label: 'Avg Score', value: gpa.toFixed(2), color: '#22c55e', sub: gpaCalc.descriptiveWord },
           { label: 'Average Score', value: `${avgScore}%`, color: '#3b82f6', sub: `${gpaCalc.letterGrade} Grade` },
           { label: 'Highest Score', value: `${highest}%`, color: '#a855f7', sub: myGrades.find(g => g.totalScore === highest)?.subjectName ?? '' },
           { label: 'Lowest Score', value: `${lowest}%`, color: '#f97316', sub: myGrades.find(g => g.totalScore === lowest)?.subjectName ?? '' },

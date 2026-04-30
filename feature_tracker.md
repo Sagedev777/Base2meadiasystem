@@ -1,4 +1,4 @@
-# 📋 Base 2 Media Academy — SMS Feature Tracker
+# 📋 Base2 Science and Media Academy — SMS Feature Tracker
 > **Purpose:** This file tracks every feature of the School Management System.
 > Any human or AI reviewer can check this file to confirm what has been designed,
 > what is in progress, and what has NOT been built yet.

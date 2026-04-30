@@ -69,10 +69,10 @@ export default function Layout() {
   const initials  = user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
   const roleTitles: Record<string, { title: string; sub: string }> = {
-    admin:   { title: 'Administrator Portal', sub: 'Base 2 Media Academy' },
-    staff:   { title: 'Staff Portal',         sub: 'Base 2 Media Academy' },
-    student: { title: 'Student Portal',       sub: 'Base 2 Media Academy' },
-    parent:  { title: 'Parent Portal',        sub: 'Base 2 Media Academy' },
+    admin:   { title: 'Administrator Portal', sub: 'Base2 Science and Media Academy' },
+    staff:   { title: 'Staff Portal',         sub: 'Base2 Science and Media Academy' },
+    student: { title: 'Student Portal',       sub: 'Base2 Science and Media Academy' },
+    parent:  { title: 'Parent Portal',        sub: 'Base2 Science and Media Academy' },
   };
   const { title, sub } = roleTitles[user.role];
 
@@ -90,7 +90,7 @@ export default function Layout() {
         <div className="sidebar-logo">
           <div className="logo-icon" style={{ background: `${accent}22`, color: accent }}>B2</div>
           <div className="logo-text">
-            <h2>Base 2 Media Academy</h2>
+            <h2>Base2 Science and Media Academy</h2>
             <span>School Management</span>
           </div>
         </div>
@@ -121,7 +121,11 @@ export default function Layout() {
 
         <div className="sidebar-footer">
           <div className="user-chip">
-            <div className="user-avatar" style={{ background: `${accent}22`, color: accent }}>{initials}</div>
+            {user.avatar ? (
+              <div className="avatar" style={{ width: 32, height: 32 }}><img src={user.avatar} alt="" /></div>
+            ) : (
+              <div className="user-avatar" style={{ background: `${accent}22`, color: accent }}>{initials}</div>
+            )}
             <div className="user-info">
               <div className="name">{user.name}</div>
               <div className="role-tag">{getRoleLabel(user.role)}</div>

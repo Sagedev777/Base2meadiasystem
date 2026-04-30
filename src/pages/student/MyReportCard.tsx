@@ -91,7 +91,7 @@ export default function MyReportCard() {
               </div>
             )}
             <div style={{ flex: 1, textAlign: 'center' }}>
-              <h1>Base 2 Media Academy</h1>
+              <h1>Base2 Science and Media Academy</h1>
               <div style={{ textAlign: 'center', color: '#94a3b8', fontSize: 13, marginBottom: 4 }}>Student Academic Report Card · {currentTerm.name}</div>
               <div style={{ fontSize: 11, color: '#94a3b8' }}>Plot 12, Media Drive, Kampala, Uganda | info@base2media.ac</div>
             </div>
@@ -103,7 +103,7 @@ export default function MyReportCard() {
             {[
               ['Student Name',    student.fullName],
               ['Student ID',      student.studentId],
-              ['Intake Cohort',   cohort?.name ?? '—'],
+              ['Class',   cohort?.name ?? '—'],
               ['Academic Term',   currentTerm.name],
               ['Gender',         student.gender],
               ['Enrollment Date', student.enrollmentDate],
@@ -149,7 +149,7 @@ export default function MyReportCard() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 20 }}>
             {[
-              { icon: <Award size={18}/>,        label: 'GPA',        value: gpaEntry.gpa.toFixed(2),                       color: '#a855f7' },
+              { icon: <Award size={18}/>,        label: 'Avg Score',        value: gpaEntry.gpa.toFixed(2),                       color: '#a855f7' },
               { icon: <ClipboardCheck size={18}/>,label: 'Attendance', value: `${att.percentage}%`,                           color: att.percentage >= 80 ? '#22c55e' : '#ef4444' },
               { icon: <TrendingUp size={18}/>,    label: 'Class Rank', value: `${gpaEntry.classRank}/${gpaEntry.totalStudents}`, color: '#3b82f6' },
               { icon: <BookOpen size={18}/>,      label: 'Subjects',   value: `${grades.length}`,                            color: '#f97316' },

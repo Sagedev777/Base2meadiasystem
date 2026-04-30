@@ -167,7 +167,7 @@ export default function Grading() {
       <div className="card" style={{ marginBottom: 20 }}>
         <div className="form-row">
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label">Intake Cohort</label>
+            <label className="form-label">Class</label>
             <select id="sel-class" className="form-select" value={selClass} onChange={e => { setSelClass(e.target.value); setScoreEdits({}); }}>
               {myClasses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
@@ -261,7 +261,7 @@ export default function Grading() {
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                           {st.photoUrl ? (
-                            <img src={st.photoUrl} className="avatar" style={{ objectFit: 'cover' }} alt="" />
+                            <div className="avatar"><img src={st.photoUrl} alt="" /></div>
                           ) : (
                             <div className="avatar" style={{ background: '#3b82f618', color: '#3b82f6' }}>{st.firstName[0]}{st.lastName[0]}</div>
                           )}

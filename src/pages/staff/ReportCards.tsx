@@ -28,7 +28,7 @@ const PRINT_CSS = `
   .header-text{flex:1;text-align:center}
 `;
 
-/** Helper: get the GPA entry for a single student from a class summary */
+/** Helper: get the Avg Score entry for a single student from a class summary */
 function getStudentGpa(students: Student[], grades: Grade[], studentId: string, classId: string, termId: string) {
   const summaries = computeGpaSummary(students, grades, classId, termId);
   return summaries.find(s => s.studentId === studentId) ?? { gpa: 0, classRank: 0, totalStudents: summaries.length };
@@ -103,7 +103,7 @@ export default function ReportCards() {
       <div class="header-flex">
         ${photoHtml}
         <div class="header-text">
-          <h1>Base 2 Media Academy</h1>
+          <h1>Base2 Science and Media Academy</h1>
           <div class="sub" style="margin-bottom:4px">Student Academic Report Card · ${currentTerm.name}</div>
           <div style="font-size:10px;color:#555">Plot 12, Media Drive, Kampala, Uganda | info@base2media.ac</div>
         </div>
@@ -113,7 +113,7 @@ export default function ReportCards() {
       <div class="info-grid">
         <div><span class="lbl">Student Name:</span> ${student.fullName}</div>
         <div><span class="lbl">Student ID:</span> ${student.studentId}</div>
-        <div><span class="lbl">Intake Cohort:</span> ${cls?.name ?? '—'}</div>
+        <div><span class="lbl">Class:</span> ${cls?.name ?? '—'}</div>
         <div><span class="lbl">Academic Term:</span> ${currentTerm.name}</div>
         <div><span class="lbl">Gender:</span> ${student.gender}</div>
         <div><span class="lbl">Enrollment Date:</span> ${student.enrollmentDate}</div>
@@ -126,7 +126,7 @@ export default function ReportCards() {
         <tbody>${gradeRows || '<tr><td colspan="7" style="text-align:center;color:#999">No grades recorded</td></tr>'}</tbody>
       </table>
       <div class="sum">
-        <div><div class="sv" style="color:#a855f7">${gpaEntry.gpa.toFixed(2)}</div><div class="sl">GPA</div></div>
+        <div><div class="sv" style="color:#a855f7">${gpaEntry.gpa.toFixed(2)}</div><div class="sl">Avg Score</div></div>
         <div><div class="sv" style="color:${att.percentage >= 80 ? '#22c55e' : '#ef4444'}">${att.percentage}%</div><div class="sl">Attendance</div></div>
         <div><div class="sv" style="color:#3b82f6">${gpaEntry.classRank}/${total}</div><div class="sl">Class Rank</div></div>
         <div><div class="sv" style="color:#f97316">${grades.length}</div><div class="sl">Subjects</div></div>
@@ -202,9 +202,17 @@ export default function ReportCards() {
 
             return (
               <div key={student.id} className="card" style={{ padding: 28 }}>
-                <div style={{ textAlign: 'center', marginBottom: 16 }}>
-                  <div style={{ fontSize: 20, fontWeight: 900 }}>Base 2 Media Academy</div>
-                  <div style={{ fontSize: 12, color: '#64748b' }}>Student Academic Report Card · {currentTerm.name}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 16 }}>
+                  {student.photoUrl ? (
+                    <div className="avatar avatar-lg" style={{ width: 64, height: 64 }}><img src={student.photoUrl} alt="" /></div>
+                  ) : (
+                    <div className="avatar avatar-lg" style={{ width: 64, height: 64, background: '#a855f718', color: '#a855f7' }}>{student.firstName[0]}{student.lastName[0]}</div>
+                  )}
+                  <div style={{ flex: 1, textAlign: 'center' }}>
+                    <div style={{ fontSize: 20, fontWeight: 900 }}>Base2 Science and Media Academy</div>
+                    <div style={{ fontSize: 12, color: '#64748b' }}>Student Academic Report Card · {currentTerm.name}</div>
+                  </div>
+                  <div style={{ width: 64 }}></div>
                 </div>
                 <hr style={{ borderColor: 'var(--border)', margin: '12px 0' }}/>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
@@ -232,7 +240,7 @@ export default function ReportCards() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 14 }}>
                   {[
-                    { label: 'GPA',        value: gpaEntry.gpa.toFixed(2),             color: '#a855f7' },
+                    { label: 'Avg Score',        value: gpaEntry.gpa.toFixed(2),             color: '#a855f7' },
                     { label: 'Attendance', value: `${att.percentage}%`,                color: att.percentage >= 80 ? '#22c55e' : '#ef4444' },
                     { label: 'Class Rank', value: `${gpaEntry.classRank}/${total}`,    color: '#3b82f6' },
                     { label: 'Subjects',   value: String(grades.length),               color: '#f97316' },

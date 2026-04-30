@@ -1,48 +1,58 @@
-import { useState } from 'react';
-import { BookOpen, User, Plus, Check, X } from 'lucide-react';
-import { SUBJECTS, CLASSES, STAFF_LIST, TERMS } from '../../data/mockData';
-
-interface Assignment {
-  id: string;
-  staffId: string;
-  subjectId: string;
-  classId: string;
-  termId: string;
-}
+import { useState, useEffect } from 'react';
+import { BookOpen, Plus, Check, X } from 'lucide-react';
+import { useDataStore } from '../../store/dataStore';
 
 export default function SubjectAssignment() {
-  const currentTerm = TERMS.find(t => t.isCurrent)!;
+  const TERMS = useDataStore(s => s.terms);
+  const CLASSES = useDataStore(s => s.classes);
+  const SUBJECTS = useDataStore(s => s.courses);
+  const STAFF_LIST = useDataStore(s => s.staff);
+  const assignments = useDataStore(s => s.assignments);
+  const { addAssignment, removeAssignment, fetchFromBackend } = useDataStore();
 
-  const [assignments, setAssignments] = useState<Assignment[]>([
-    { id: 'a1', staffId: STAFF_LIST[0]?.id ?? '', subjectId: SUBJECTS[0]?.id ?? '', classId: CLASSES[0]?.id ?? '', termId: currentTerm.id },
-    { id: 'a2', staffId: STAFF_LIST[0]?.id ?? '', subjectId: SUBJECTS[1]?.id ?? '', classId: CLASSES[0]?.id ?? '', termId: currentTerm.id },
-    { id: 'a3', staffId: STAFF_LIST[1]?.id ?? STAFF_LIST[0]?.id ?? '', subjectId: SUBJECTS[2]?.id ?? '', classId: CLASSES[1]?.id ?? '', termId: currentTerm.id },
-  ]);
-
+  const currentTerm = TERMS.find(t => t.isCurrent) || TERMS[0];
+  
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ staffId: '', subjectId: '', classId: '' });
+  const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const handleAdd = () => {
-    if (!form.staffId || !form.subjectId || !form.classId) return;
-    const exists = assignments.find(a => a.staffId === form.staffId && a.subjectId === form.subjectId && a.classId === form.classId);
-    if (exists) return;
+  useEffect(() => {
+    fetchFromBackend();
+  }, []);
 
-    setAssignments(prev => [...prev, {
-      id: `a${Date.now()}`,
-      staffId: form.staffId,
-      subjectId: form.subjectId,
-      classId: form.classId,
-      termId: currentTerm.id,
-    }]);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-    setForm({ staffId: '', subjectId: '', classId: '' });
-    setShowForm(false);
+  if (!currentTerm) {
+    return <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>No active academic term found. Please configure terms in Academic Setup.</div>;
+  }
+
+  const handleAdd = async () => {
+    if (!form.staffId || !form.subjectId || !form.classId) return;
+    setLoading(true);
+    try {
+      await addAssignment({
+        staffId: form.staffId,
+        subjectId: form.subjectId,
+        classId: form.classId,
+        termId: currentTerm.id,
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+      setForm({ staffId: '', subjectId: '', classId: '' });
+      setShowForm(false);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRemove = (id: string) => {
-    setAssignments(prev => prev.filter(a => a.id !== id));
+  const handleRemove = async (id: string) => {
+    if (!confirm('Are you sure you want to remove this assignment?')) return;
+    try {
+      await removeAssignment(id);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const getStaff = (id: string) => STAFF_LIST.find(s => s.id === id);
@@ -52,8 +62,8 @@ export default function SubjectAssignment() {
   // Group by staff member
   const grouped = STAFF_LIST.map(staff => ({
     staff,
-    assignments: assignments.filter(a => a.staffId === staff.id),
-  })).filter(g => g.assignments.length > 0);
+    staffAssignments: assignments.filter(a => a.staffId === staff.id),
+  })).filter(g => g.staffAssignments.length > 0);
 
   return (
     <div>
@@ -99,8 +109,8 @@ export default function SubjectAssignment() {
                 {CLASSES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
-            <button id="btn-confirm-assign" className="btn btn-primary" style={{ marginBottom: 0 }} onClick={handleAdd}>
-              <Check size={14}/> Assign
+            <button id="btn-confirm-assign" className="btn btn-primary" style={{ marginBottom: 0 }} onClick={handleAdd} disabled={loading}>
+              <Check size={14}/> {loading ? 'Assigning...' : 'Assign'}
             </button>
           </div>
         </div>
@@ -109,12 +119,16 @@ export default function SubjectAssignment() {
       {/* Assignments grouped by teacher */}
       {grouped.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {grouped.map(({ staff, assignments: staffAssignments }) => (
+          {grouped.map(({ staff, staffAssignments }) => (
             <div className="card" key={staff.id}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-                <div className="avatar avatar-lg" style={{ background: '#3b82f618', color: '#3b82f6' }}>
-                  {staff.firstName[0]}{staff.lastName[0]}
-                </div>
+                {staff.photoUrl ? (
+                  <div className="avatar avatar-lg"><img src={staff.photoUrl} alt="" /></div>
+                ) : (
+                  <div className="avatar avatar-lg" style={{ background: '#3b82f618', color: '#3b82f6' }}>
+                    {staff.firstName[0]}{staff.lastName[0]}
+                  </div>
+                )}
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 16 }}>{staff.fullName}</div>
                   <div style={{ fontSize: 12, color: '#64748b' }}>{staff.department} · {staff.staffId}</div>
@@ -176,7 +190,11 @@ export default function SubjectAssignment() {
                   <tr key={a.id}>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div className="avatar" style={{ background: '#3b82f618', color: '#3b82f6', width: 28, height: 28, fontSize: 11 }}>{staff?.firstName[0]}{staff?.lastName[0]}</div>
+                        {staff?.photoUrl ? (
+                          <div className="avatar" style={{ width: 28, height: 28 }}><img src={staff.photoUrl} alt="" /></div>
+                        ) : (
+                          <div className="avatar" style={{ background: '#3b82f618', color: '#3b82f6', width: 28, height: 28, fontSize: 11 }}>{staff?.firstName[0]}{staff?.lastName[0]}</div>
+                        )}
                         <span style={{ fontWeight: 600 }}>{staff?.fullName}</span>
                       </div>
                     </td>

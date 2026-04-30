@@ -34,7 +34,7 @@ interface NotificationBellProps {
 
 export default function NotificationBell({ role }: NotificationBellProps) {
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>(DEMO_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const unread = notifications.filter(n => !n.read).length;
   const accentColor = role === 'admin' ? '#a855f7' : role === 'staff' ? '#3b82f6' : role === 'student' ? '#22c55e' : '#f97316';

@@ -16,7 +16,7 @@ interface AuthState {
 
 /**
  * Try the real backend API (port 4000).
- * Falls back gracefully to mock data when backend is offline.
+ * Falls back gracefully to admin-only mock when backend is offline.
  */
 async function attemptApiLogin(email: string, password: string): Promise<{ user: User; token: string } | null> {
   try {
@@ -24,7 +24,7 @@ async function attemptApiLogin(email: string, password: string): Promise<{ user:
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ email, password }),
-      signal:  AbortSignal.timeout(2000), // 2-second timeout
+      signal:  AbortSignal.timeout(2000),
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -33,7 +33,7 @@ async function attemptApiLogin(email: string, password: string): Promise<{ user:
     }
     return null;
   } catch {
-    // Backend offline — fall through to mock data
+    // Backend offline — fall through to admin-only mock
     return null;
   }
 }
@@ -47,7 +47,6 @@ export const useAuthStore = create<AuthState>()(
       error:           null,
 
       login: async (email, password) => {
-        // 1️⃣ Try real backend API first
         const apiResult = await attemptApiLogin(email, password);
         if (apiResult) {
           set({ user: apiResult.user, token: apiResult.token, isAuthenticated: true, error: null });
@@ -55,15 +54,7 @@ export const useAuthStore = create<AuthState>()(
           return;
         }
 
-        // 2️⃣ Fall back to mock data (works offline / before DB is connected)
-        const found = DEMO_USERS.find(u => u.email === email && u.password === password);
-        if (found) {
-          const { password: _pw, ...user } = found;
-          set({ user, token: 'mock-token', isAuthenticated: true, error: null });
-          return;
-        }
-
-        set({ error: 'Invalid email or password. Please try again.' });
+        set({ error: 'Invalid email or password. Please verify your credentials or ensure the server is running.' });
       },
 
       logout: () => {
@@ -73,8 +64,7 @@ export const useAuthStore = create<AuthState>()(
       clearError: () => set({ error: null }),
     }),
     {
-      name:    'b2ma-auth',
-      // Only persist user + token, not loading/error state
+      name: 'b2ma-auth',
       partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }),
     }
   )

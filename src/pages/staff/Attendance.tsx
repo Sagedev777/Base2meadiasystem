@@ -144,7 +144,7 @@ export default function Attendance() {
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             {st.photoUrl ? (
-                              <img src={st.photoUrl} className="avatar" style={{ objectFit: 'cover', border: `2px solid ${STATUS_COLOR[status]}30` }} alt="" />
+                              <div className="avatar"><img src={st.photoUrl} alt="" /></div>
                             ) : (
                               <div className="avatar" style={{ background: `${STATUS_COLOR[status]}18`, color: STATUS_COLOR[status] }}>{st.firstName[0]}{st.lastName[0]}</div>
                             )}

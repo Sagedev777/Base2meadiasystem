@@ -6,8 +6,14 @@ import { UserCog, Mail, Phone, Plus, UserX, UserCheck, Edit2, X, Save } from 'lu
 type StaffMember = Staff & { isActive?: boolean };
 
 export default function StaffManagement() {
-  const baseStaff = useDataStore(s => s.staff);
-  const setBaseStaff = useDataStore(s => s.setStaff);
+  const baseStaff        = useDataStore(s => s.staff);
+  const setBaseStaff     = useDataStore(s => s.setStaff);
+  const addStaff         = useDataStore(s => s.addStaff);
+  const deactivateStaff  = useDataStore(s => s.deactivateStaff);
+  const reactivateStaff  = useDataStore(s => s.reactivateStaff);
+  const saving           = useDataStore(s => s.saving);
+  const saveError        = useDataStore(s => s.saveError);
+  const clearError       = useDataStore(s => s.clearSaveError);
   const [staff, setStaff] = useState<StaffMember[]>(baseStaff.map(s => ({ ...s, isActive: true })));
 
   const saveToStore = (newStaff: StaffMember[]) => {
@@ -19,58 +25,57 @@ export default function StaffManagement() {
   
   const [showModal, setShowModal] = useState(false);
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', department: '' });
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', department: '', password: '' });
   
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
 
   const filtered = staff.filter(s => filterStatus === 'all' || (filterStatus === 'active' ? s.isActive : !s.isActive));
 
-  const handleDeactivate = () => {
+  const handleDeactivate = async () => {
     if (!deactivateId) return;
+    await deactivateStaff(deactivateId);
     saveToStore(staff.map(s => s.id === deactivateId ? { ...s, isActive: false } : s));
     setDeactivateId(null); setDeactivateReason('');
   };
-  const handleReactivate = (id: string) => {
+  const handleReactivate = async (id: string) => {
+    await reactivateStaff(id);
     saveToStore(staff.map(s => s.id === id ? { ...s, isActive: true } : s));
   };
   
   const openAdd = () => {
     setEditingStaff(null);
-    setForm({ firstName: '', lastName: '', email: '', phone: '', department: '' });
+    setForm({ firstName: '', lastName: '', email: '', phone: '', department: '', password: '' });
     setShowModal(true);
   };
   
   const openEdit = (s: StaffMember) => {
     setEditingStaff(s);
-    setForm({ firstName: s.firstName, lastName: s.lastName, email: s.email, phone: s.phone, department: s.department });
+    setForm({ firstName: s.firstName, lastName: s.lastName, email: s.email, phone: s.phone, department: s.department, password: '' });
     setShowModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.firstName || !form.email) return;
-    
     if (editingStaff) {
+      // Local update for edits
       saveToStore(staff.map(s => s.id === editingStaff.id ? {
-        ...s,
-        firstName: form.firstName,
-        lastName: form.lastName,
+        ...s, firstName: form.firstName, lastName: form.lastName,
         fullName: `${form.firstName} ${form.lastName}`,
-        email: form.email,
-        phone: form.phone,
-        department: form.department
+        email: form.email, phone: form.phone, department: form.department,
       } : s));
+      setShowModal(false);
     } else {
-      const id = `staff-${Date.now()}`;
-      saveToStore([...staff, {
-        id, staffId: `B2MA-STAFF-${String(staff.length + 1).padStart(3,'0')}`,
-        firstName: form.firstName, lastName: form.lastName,
-        fullName: `${form.firstName} ${form.lastName}`,
-        email: form.email, phone: form.phone,
-        department: form.department, subjects: [], classes: [],
-        hireDate: new Date().toISOString().slice(0,10), isActive: true,
-      }]);
+      try {
+        await addStaff({
+          firstName: form.firstName, lastName: form.lastName,
+          email: form.email, phone: form.phone, department: form.department,
+          password: form.password || 'staff123',
+        });
+        setShowModal(false);
+      } catch {
+        // saveError displayed below
+      }
     }
-    setShowModal(false);
   };
 
   return (
@@ -94,9 +99,13 @@ export default function StaffManagement() {
         {filtered.map(sf => (
           <div className="card" key={sf.id} style={{ opacity: sf.isActive ? 1 : 0.6 }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-              <div className="avatar avatar-lg" style={{ background: sf.isActive ? '#3b82f618' : '#ef444418', color: sf.isActive ? '#3b82f6' : '#ef4444' }}>
-                {sf.firstName[0]}{sf.lastName[0]}
-              </div>
+              {sf.photoUrl ? (
+                <div className="avatar avatar-lg"><img src={sf.photoUrl} alt="" /></div>
+              ) : (
+                <div className="avatar avatar-lg" style={{ background: sf.isActive ? '#3b82f618' : '#ef444418', color: sf.isActive ? '#3b82f6' : '#ef4444' }}>
+                  {sf.firstName[0]}{sf.lastName[0]}
+                </div>
+              )}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ fontWeight: 700, fontSize: 15 }}>{sf.fullName}</div>
@@ -115,7 +124,7 @@ export default function StaffManagement() {
             <div style={{ marginTop: 14 }}>
               <div style={{ fontSize: 11, color: '#64748b', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Subjects</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                {sf.subjects.map(s => <span key={s} className="badge badge-info">{s}</span>)}
+                {(sf.subjects || []).map(s => <span key={s} className="badge badge-info">{s}</span>)}
               </div>
             </div>
             <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
@@ -151,7 +160,11 @@ export default function StaffManagement() {
                 <tr key={sf.id} style={{ opacity: sf.isActive ? 1 : 0.6 }}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {sf.photoUrl ? (
+                      <div className="avatar"><img src={sf.photoUrl} alt="" /></div>
+                    ) : (
                       <div className="avatar" style={{ background: '#3b82f618', color: '#3b82f6' }}>{sf.firstName[0]}{sf.lastName[0]}</div>
+                    )}
                       <div><div style={{ fontWeight: 600 }}>{sf.fullName}</div><div className="td-muted">{sf.email}</div></div>
                     </div>
                   </td>
@@ -159,7 +172,7 @@ export default function StaffManagement() {
                   <td className="td-muted">{sf.department}</td>
                   <td className="td-muted">{sf.phone}</td>
                   <td className="td-muted">{sf.hireDate}</td>
-                  <td><div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>{sf.subjects.map(s => <span key={s} className="badge badge-info" style={{ fontSize: 10 }}>{s}</span>)}</div></td>
+                  <td><div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>{(sf.subjects || []).map(s => <span key={s} className="badge badge-info" style={{ fontSize: 10 }}>{s}</span>)}</div></td>
                   <td><span className={`badge ${sf.isActive ? 'badge-success' : 'badge-danger'}`}>{sf.isActive ? 'Active' : 'Inactive'}</span></td>
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>
@@ -205,19 +218,56 @@ export default function StaffManagement() {
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header"><h3>{editingStaff ? 'Edit Staff' : 'Add New Staff'}</h3><button className="modal-close" onClick={() => setShowModal(false)}>✕</button></div>
             <div className="modal-body">
+              {/* Photo Upload Section */}
+              <div style={{ display: 'flex', gap: 16, marginBottom: 20, alignItems: 'center', paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
+                {form.photoUrl ? (
+                  <div className="avatar avatar-lg"><img src={form.photoUrl} alt="Preview" /></div>
+                ) : (
+                  <div className="avatar avatar-lg" style={{ background: 'var(--bg-surface)', border: '2px dashed var(--border)' }}>
+                    {form.firstName ? form.firstName[0] : '?'}
+                  </div>
+                )}
+                <div>
+                  <h4 style={{ fontSize: 13, marginBottom: 4 }}>Staff Photo</h4>
+                  <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer' }}>
+                    <Plus size={12} /> {form.photoUrl ? 'Change Photo' : 'Upload Photo'}
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setForm(p => ({ ...p, photoUrl: ev.target?.result as string }));
+                        reader.readAsDataURL(file);
+                      }
+                    }}/>
+                  </label>
+                </div>
+              </div>
+
               <div className="form-row">
                 <div className="form-group"><label className="form-label">First Name</label><input className="form-input" value={form.firstName} onChange={e => setForm(p => ({...p, firstName: e.target.value}))}/></div>
                 <div className="form-group"><label className="form-label">Last Name</label><input className="form-input" value={form.lastName} onChange={e => setForm(p => ({...p, lastName: e.target.value}))}/></div>
               </div>
-              <div className="form-group"><label className="form-label">Email</label><input type="email" className="form-input" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))}/></div>
+              <div className="form-row">
+                <div className="form-group"><label className="form-label">Email</label><input type="email" className="form-input" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))}/></div>
+                {!editingStaff && (
+                  <div className="form-group"><label className="form-label">Password</label><input type="text" className="form-input" placeholder="e.g. staff123" value={form.password} onChange={e => setForm(p => ({...p, password: e.target.value}))}/></div>
+                )}
+              </div>
               <div className="form-row">
                 <div className="form-group"><label className="form-label">Phone</label><input className="form-input" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))}/></div>
                 <div className="form-group"><label className="form-label">Department</label><input className="form-input" value={form.department} onChange={e => setForm(p => ({...p, department: e.target.value}))}/></div>
               </div>
+              <div className="form-group">
+                <label className="form-label">Assigned Subjects (optional)</label>
+                <input className="form-input" placeholder="e.g. Mathematics, Physics..." value={form.subjects.join(', ')} onChange={e => setForm(p => ({...p, subjects: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}))}/>
+              </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-ghost" onClick={() => setShowModal(false)}>Cancel</button>
-              <button id="btn-save-staff" className="btn btn-primary" onClick={handleSave}><Save size={14}/> {editingStaff ? 'Save Changes' : 'Create Account'}</button>
+              <button className="btn btn-ghost" onClick={() => { setShowModal(false); clearError(); }}>Cancel</button>
+              {saveError && <span style={{ fontSize: 12, color: '#f87171', flex: 1 }}>{saveError}</span>}
+              <button id="btn-save-staff" className="btn btn-primary" onClick={handleSave} disabled={saving}>
+                <Save size={14}/> {saving ? 'Saving…' : editingStaff ? 'Save Changes' : 'Create Account'}
+              </button>
             </div>
           </div>
         </div>
