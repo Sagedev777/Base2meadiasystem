@@ -60,7 +60,7 @@ interface DataState {
   setTerms:     (v: Term[]     | ((p: Term[])     => Term[]))     => void;
   clearSaveError: () => void;
 
-  addStudent:    (data: Omit<Student, 'id' | 'fullName'> & { password?: string; totalFee?: number; initialPayment?: number; }) => Promise<void>;
+  addStudent:    (data: Omit<Student, 'id' | 'fullName' | 'studentId' | 'status'> & { password?: string; totalFee?: number; initialPayment?: number; }) => Promise<void>;
   updateStudent: (id: string, data: Partial<Student>) => Promise<void>;
   deleteStudent: (id: string) => Promise<void>;
   updateStudentStatus: (id: string, status: string) => Promise<void>;
@@ -272,12 +272,20 @@ export const useDataStore = create<DataState>()(
           const paymentsRes = await apiFetch('/admin/payments').catch(() => ({ data: [] }));
 
           set({
-            students:   (data.students || []).map((s: any) => ({
-              ...s,
-              totalFee: s.totalFee ? parseFloat(s.totalFee) : 0,
-              dateOfBirth: s.dateOfBirth ? (typeof s.dateOfBirth === 'string' ? s.dateOfBirth.split('T')[0] : new Date(s.dateOfBirth).toISOString().split('T')[0]) : '',
-              enrolledCourseIds: typeof s.enrolledCourseIds === 'string' ? JSON.parse(s.enrolledCourseIds) : s.enrolledCourseIds || []
-            })),
+            students:   (data.students || []).map((s: any) => {
+              let parsedCourseIds = [];
+              try {
+                parsedCourseIds = typeof s.enrolledCourseIds === 'string' ? JSON.parse(s.enrolledCourseIds) : (s.enrolledCourseIds || []);
+              } catch (e) {
+                parsedCourseIds = [];
+              }
+              return {
+                ...s,
+                totalFee: s.totalFee ? parseFloat(s.totalFee) : 0,
+                dateOfBirth: s.dateOfBirth ? (typeof s.dateOfBirth === 'string' ? s.dateOfBirth.split('T')[0] : new Date(s.dateOfBirth).toISOString().split('T')[0]) : '',
+                enrolledCourseIds: parsedCourseIds
+              };
+            }),
             staff:      (data.staff || []).map((s: any) => ({ ...s, subjects: s.subjects || [] })),
             classes:    data.classes    || [],
             courses:    data.courses    || COURSES,

@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '../db';
-import { studentProfiles, staffProfiles, users, classes, terms, grades, payments, parentProfiles } from '../db/schema';
+import { studentProfiles, staffProfiles, users, classes, terms, grades, payments, parentProfiles, classSubjects } from '../db/schema';
 import { eq, and } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
@@ -56,6 +56,7 @@ export default async function adminRoutes(server: FastifyInstance) {
         parentName2:    studentProfiles.parentName2,
         parentPhone2:   studentProfiles.parentPhone2,
         enrolledCourseIds: studentProfiles.enrolledCourseIds,
+        totalFee:       studentProfiles.totalFee,
       }).from(studentProfiles).innerJoin(users, eq(studentProfiles.userId, users.id));
 
       const allStaff = await db.select({
@@ -212,8 +213,8 @@ export default async function adminRoutes(server: FastifyInstance) {
         parentPhone1: body.parentPhone1,
         parentName2: body.parentName2,
         parentPhone2: body.parentPhone2,
-        enrolledCourseIds: body.enrolledCourseIds ? JSON.stringify(body.enrolledCourseIds) : undefined,
-        totalFee: body.totalFee ? body.totalFee.toString() : undefined,
+        enrolledCourseIds: body.enrolledCourseIds !== undefined ? JSON.stringify(body.enrolledCourseIds) : undefined,
+        totalFee: body.totalFee !== undefined ? body.totalFee.toString() : undefined,
       }).where(eq(studentProfiles.id, id));
 
       // Update user name if names changed

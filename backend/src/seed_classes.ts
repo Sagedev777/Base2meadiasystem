@@ -1,19 +1,18 @@
 import { db } from './db';
 import { terms, classes } from './db/schema';
+import { v4 as uuidv4 } from 'uuid';
 
 async function seedClasses() {
   console.log('🌱 Seeding Terms and Classes...');
 
-  // 1. Create a Term
-  console.log('📅 Creating current term...');
-  const termRes = await db.insert(terms).values({
+  const termId = uuidv4();
+  await db.insert(terms).values({
+    id: termId,
     name: 'Term 1 - 2026',
     startDate: '2026-01-15',
     endDate: '2026-04-15',
     isCurrent: true,
-  }).returning();
-  
-  const termId = termRes[0].id;
+  });
 
   // 2. Create Classes
   console.log('🏫 Creating classes for departments...');

@@ -25,7 +25,7 @@ export default function StaffManagement() {
   
   const [showModal, setShowModal] = useState(false);
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', department: '', password: '' });
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', department: '', password: '', photoUrl: '', subjects: [] as string[] });
   
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
 
@@ -44,13 +44,13 @@ export default function StaffManagement() {
   
   const openAdd = () => {
     setEditingStaff(null);
-    setForm({ firstName: '', lastName: '', email: '', phone: '', department: '', password: '' });
+    setForm({ firstName: '', lastName: '', email: '', phone: '', department: '', password: '', photoUrl: '', subjects: [] });
     setShowModal(true);
   };
   
   const openEdit = (s: StaffMember) => {
     setEditingStaff(s);
-    setForm({ firstName: s.firstName, lastName: s.lastName, email: s.email, phone: s.phone, department: s.department, password: '' });
+    setForm({ firstName: s.firstName, lastName: s.lastName, email: s.email, phone: s.phone, department: s.department, password: '', photoUrl: s.photoUrl || '', subjects: s.subjects || [] });
     setShowModal(true);
   };
 

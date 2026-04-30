@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Plus, Filter, MoreVertical, Edit2, Trash2, UserMinus, UserCheck, Phone, Mail, MapPin, Calendar, CreditCard, Users } from 'lucide-react';
+import { Search, Plus, Filter, MoreVertical, Edit2, Trash2, UserMinus, UserCheck, Phone, Mail, MapPin, Calendar, CreditCard, Users, Eye } from 'lucide-react';
 import { useDataStore } from '../../store/dataStore';
 import { Student } from '../../types';
 import { COURSES } from '../../data/mockData';
 
-type FormData = Omit<Student, 'id' | 'fullName' | 'studentId' | 'status'> & { totalFee: string; initialPayment: string };
+type FormData = Omit<Student, 'id' | 'fullName' | 'studentId' | 'status' | 'totalFee'> & { totalFee: string; initialPayment: string };
 
 const emptyForm: FormData = {
   firstName: '', lastName: '', email: '', phone: '', address: '', gender: 'Male',
@@ -21,9 +21,18 @@ export default function Students() {
   const [filterClass, setFilterClass] = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Student | null>(null);
+  const [viewing, setViewing] = useState<Student | null>(null);
   const [form, setForm] = useState<FormData>(emptyForm);
   const [withdrawId, setWithdrawId] = useState<string | null>(null);
   const [withdrawReason, setWithdrawReason] = useState('');
+
+  const handleWithdraw = async () => {
+    if (!withdrawId) return;
+    try {
+      await updateStudentStatus(withdrawId, 'withdrawn');
+      setWithdrawId(null);
+    } catch (err: any) { alert(err.message); }
+  };
 
   useEffect(() => {
     fetchFromBackend();
@@ -158,7 +167,8 @@ export default function Students() {
                   <td><span className={`badge ${s.status === 'active' ? 'badge-success' : s.status === 'withdrawn' ? 'badge-danger' : 'badge-purple'}`}>{s.status}</span></td>
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      <button className="btn btn-ghost btn-sm" onClick={() => openEdit(s)}><Edit2 size={12}/></button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => setViewing(s)} title="View Student"><Eye size={12}/></button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => openEdit(s)} title="Edit Student"><Edit2 size={12}/></button>
                       {s.status === 'active' ? (
                         <button className="btn btn-ghost btn-sm" onClick={() => setWithdrawId(s.id)}><UserMinus size={12}/></button>
                       ) : (
@@ -293,6 +303,70 @@ export default function Students() {
             <div className="modal-footer">
               <button className="btn btn-ghost" onClick={() => setWithdrawId(null)}>Cancel</button>
               <button className="btn btn-danger" onClick={handleWithdraw}>Withdraw Student</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewing && (
+        <div className="modal-overlay" onClick={() => setViewing(null)}>
+          <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Student Profile</h3>
+              <button className="modal-close" onClick={() => setViewing(null)}>✕</button>
+            </div>
+            <div className="modal-body" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 24 }}>
+              <div>
+                <div style={{ textAlign: 'center', marginBottom: 20 }}>
+                  <div className="avatar avatar-xl" style={{ margin: '0 auto', marginBottom: 12 }}>
+                    {viewing.photoUrl ? <img src={viewing.photoUrl} alt="Profile" /> : <Users size={32}/>}
+                  </div>
+                  <h4 style={{ margin: 0, fontSize: 18 }}>{viewing.fullName}</h4>
+                  <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: 13 }}>{viewing.studentId}</p>
+                  <span className={`badge ${viewing.status === 'active' ? 'badge-success' : viewing.status === 'withdrawn' ? 'badge-danger' : 'badge-purple'}`} style={{ marginTop: 8 }}>{viewing.status}</span>
+                </div>
+                
+                <div style={{ background: 'var(--bg-surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', fontSize: 13 }}>
+                  <div style={{ marginBottom: 12 }}><div style={{ color: '#64748b', fontSize: 11, marginBottom: 2 }}>Gender & DOB</div><div>{viewing.gender || '—'} • {viewing.dateOfBirth || '—'}</div></div>
+                  <div style={{ marginBottom: 12 }}><div style={{ color: '#64748b', fontSize: 11, marginBottom: 2 }}>Contact</div><div style={{ display: 'flex', alignItems: 'center' }}><Phone size={12} style={{ marginRight: 4 }}/>{viewing.phone || '—'}</div><div style={{ marginTop: 4, display: 'flex', alignItems: 'center' }}><Mail size={12} style={{ marginRight: 4 }}/>{viewing.email || '—'}</div></div>
+                  <div><div style={{ color: '#64748b', fontSize: 11, marginBottom: 2 }}>Address</div><div style={{ display: 'flex', alignItems: 'center' }}><MapPin size={12} style={{ marginRight: 4 }}/>{viewing.address || '—'}</div></div>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ background: 'var(--bg-surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', marginBottom: 16 }}>
+                  <h5 style={{ margin: '0 0 12px 0', fontSize: 14 }}>Academic Details</h5>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, fontSize: 13 }}>
+                    <div><div style={{ color: '#64748b', fontSize: 11, marginBottom: 2 }}>Class/Department</div><div style={{ fontWeight: 600 }}>{viewing.className || '—'}</div></div>
+                    <div><div style={{ color: '#64748b', fontSize: 11, marginBottom: 2 }}>Enrollment Date</div><div>{viewing.enrollmentDate || '—'}</div></div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <div style={{ color: '#64748b', fontSize: 11, marginBottom: 6 }}>Enrolled Courses</div>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                        {viewing.enrolledCourseIds?.length ? viewing.enrolledCourseIds.map(id => {
+                          const course = COURSES.find(c => c.id === id);
+                          return <span key={id} className="badge badge-muted">{course?.name || id}</span>;
+                        }) : <span style={{ color: '#94a3b8' }}>No courses assigned</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: 'var(--bg-surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)', marginBottom: 16 }}>
+                  <h5 style={{ margin: '0 0 12px 0', fontSize: 14 }}>Parent/Guardian Details</h5>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, fontSize: 13 }}>
+                    <div><div style={{ color: '#64748b', fontSize: 11, marginBottom: 2 }}>Primary Guardian</div><div style={{ fontWeight: 600 }}>{viewing.parentName1 || '—'}</div><div>{viewing.parentPhone1}</div></div>
+                    {viewing.parentName2 && <div><div style={{ color: '#64748b', fontSize: 11, marginBottom: 2 }}>Secondary Guardian</div><div style={{ fontWeight: 600 }}>{viewing.parentName2}</div><div>{viewing.parentPhone2}</div></div>}
+                  </div>
+                </div>
+
+                <div style={{ background: 'var(--bg-surface)', padding: 16, borderRadius: 12, border: '1px solid var(--border)' }}>
+                  <h5 style={{ margin: '0 0 12px 0', fontSize: 14 }}>Financial Details</h5>
+                  <div style={{ fontSize: 13 }}>
+                    <div style={{ color: '#64748b', fontSize: 11, marginBottom: 2 }}>Agreed Total Fee</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: '#f97316' }}>{viewing.totalFee ? `UGX ${viewing.totalFee.toLocaleString()}` : '—'}</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
